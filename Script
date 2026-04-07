@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Process Monitor - Simplified Version
+# Monitors critical processes and logs their status
+
+PROCESS_NAME="bash"
+CHECK_INTERVAL=5
+LOG_FILE="process_monitor.log"
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] === Process Monitor Started ===" | tee -a "$LOG_FILE"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Monitoring: $PROCESS_NAME" | tee -a "$LOG_FILE"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Check interval: ${CHECK_INTERVAL}s" | tee -a "$LOG_FILE"
+
+# Run 3 checks (for demo purposes)
+for i in {1..3}; do
+    if pgrep -x "$PROCESS_NAME" > /dev/null; then
+        PID=$(pgrep -x "$PROCESS_NAME" | head -1)
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ Process '$PROCESS_NAME' is running (PID: $PID)" | tee -a "$LOG_FILE"
+    else
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✗ Process '$PROCESS_NAME' is NOT running" | tee -a "$LOG_FILE"
+    fi
+
+    # Don't sleep on the last iteration
+    if [ $i -lt 3 ]; then
+        sleep $CHECK_INTERVAL
+    fi
+done
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] === Monitoring completed ===" | tee -a "$LOG_FILE"
